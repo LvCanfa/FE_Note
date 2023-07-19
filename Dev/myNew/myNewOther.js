@@ -1,7 +1,7 @@
 /**
  * @param {*} 寄生式组合继承：对组合继承的扩展
+ * @why 使用这个函数来拷贝 SuperType.prototype 来防止赋值是地址的引用
  */
-
 function object(obj) {
   // 原型式继承 Object.create()是使用的这种方式，原型式继承的规范化，第一个参数为原型对象，第二个参数是新增属性
   function F() {} // 一个临时的构造函数
@@ -39,5 +39,6 @@ Sub.prototype.sayAge = function () {
   console.log(`Sub's prototype function :${this.age}`);
 }
 const SubT = new Sub('a', 12);
+console.log(SubT);
 SubT.sayAge();
 SubT.sayType();
