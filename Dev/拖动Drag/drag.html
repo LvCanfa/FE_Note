@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="dropzone">
+        <div id="draggable" draggable="true">
+            这个 div 可以拖动
+        </div>
+    </div>
+    <div class="dropzone" id="droptarget" draggable="true"></div>
+    <div class="dropzone" id="droptarget"></div>
+    <button id="moveElm">start</button>
+</body>
+<style>
+    body {
+        /* Prevent the user selecting text in the example */
+        user-select: none;
+    }
+
+    #draggable {
+        text-align: center;
+        background: white;
+    }
+
+    .dropzone {
+        width: 200px;
+        height: 20px;
+        background: blueviolet;
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .dropzone.dragover {
+        background-color: purple;
+    }
+
+    .dragging {
+        opacity: .5;
+    }
+</style>
+
+</html>
+<script>
+    let dragged;
+
+    /* events fired on the draggable target */
+    const source = document.getElementById("draggable");
+
+
+    let timeNow = null;
+    let enqueued = false
+    source.addEventListener("drag", (event) => {
+        console.log("dragging");
+    });
+
+    source.addEventListener("dragstart", (event) => {
+        // store a ref. on the dragged elem
+        dragged = event.target;
+        // make it half transparent
+        event.target.classList.add("dragging");
+    });
+
+    source.addEventListener("dragend", (event) => {
+        // reset the transparency
+        event.target.classList.remove("dragging");
+    });
+
+    let times = 0
+    /* events fired on the drop targets */
+    let dragTarget = [...document.getElementsByClassName("dropzone")];
+    dragTarget.map((target) => {
+        target.addEventListener("dragstart", (event) => {
+            dragged = event.target;
+        });
+        target.addEventListener("dragover", (event) => {
+            event.preventDefault();
+        }, false);
+
+        target.addEventListener("drop", (event) => {
+            event.preventDefault();
+            dragged.parentNode.removeChild(dragged);
+            event.target.appendChild(dragged);
+        });
+    })
+    let transFormY = 0
+    function moveDragElm() {
+        console.log(transFormY);
+        source.style.transform = `translate(0, ${transFormY++}px)`
+        if (transFormY < 100) {
+            requestAnimationFrame(moveDragElm)
+        }
+    }
+    const startMove = document.getElementById('moveElm');
+    startMove.addEventListener('click',()=>{
+        requestAnimationFrame(moveDragElm)
+    })
+</script>

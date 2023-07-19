@@ -1,0 +1,10 @@
+.js和.mjs是JavaScript的文件扩展名，两者在语言本身上没有什么区别。
+但是，.mjs与.js还有一些重要的不同点：
+
+1. .mjs只支持ECMAScript模块，而.js既可以是普通脚本文件，也可以是模块文件。
+2. 在浏览器中使用时，.mjs会被当作ES6模块来处理，而.js可能会被当作CommonJS或AMD模块来处理。
+3. .mjs文件必须使用import/export关键字来导入/导出模块，而不能使用require/module.exports。
+4. 如果在一个.js文件中使用了import/export关键字，那么该文件就不能被引入到一个.mjs文件中。
+
+因此，在使用ECMAScript模块的情况下，建议使用.mjs作为文件扩展名，以充分利用JavaScript模块化的特性。
+如果不确定是否需要使用ECMAScript模块，则可以使用.js作为文件扩展名，同时在代码中根据实际情况选择使用不同的导入/导出方式。

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+  ul{
+    display: block;
+    list-style: none;
+  }
+  ul li{
+    border-bottom: 1px solid #999;
+    margin: 10px 0;
+  }
+</style>
+<body>
+  <button onclick="addLi()">数据增加</button>
+  <ul id="ul">
+    <li>数据1</li>
+  </ul>
+</body>
+</html>
+<script>
+  const ul = document.getElementById('ul');
+  let id = 2;
+  function addLi(){
+    const newLi = document.createElement('li');
+    newLi.innerHTML = `数据添加--数据${id++}`;
+    ul.appendChild(newLi);
+  }
+  let o = 0;
+  let worker = new Worker('./dedicatedWorker.js');
+  worker.postMessage('1222');
+  worker.onmessage = (result) => {
+    console.log(result)
+  };
+  console.log(navigator.serviceWorker);
+</script>

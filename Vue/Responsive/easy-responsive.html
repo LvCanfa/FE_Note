@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    <div> name = <span id="name"></span></div>
+    <div> age = <span id="age"></span></div>
+    <div> work = <span id="work"></span></div>
+    <button onclick="changeName()">换名</button>
+    <button onclick="agechange()">返老还童</button>
+  </div>
+</body>
+</html>
+
+<script>
+  // 存储副作用函数
+  const bucket = new WeakMap()
+  let activeEffect
+
+  function effect(fn) {
+    const effectFn = (key, val) => {
+      cleanUp(effectFn) // cleanUp 掉副作用函数是为了每次只监听被用到的 obj[key]，若原本使用到了，但是后面不使用了，如 Boolean ? obj.a : obj.b，则不监听未使用的 key 以提升性能
+      activeEffect = effectFn
+      fn(key, val)
+    }
+    effectFn.deps = [] // 存储此副作用函数对应使用到的 key
+    effectFn()
+  }
+
+  /*
+  * 传入副作用函数
+  */
+  effect(
+    (key, val) => {
+      console.log(`这里是副作用函数！！！get了 ${key}:${val}`);
+      const domNode = document.getElementById(key);
+      domNode.innerHTML = val
+    }
+  )
+
+  /*
+  * effectFn 传入现有的副作用函数，全部清除，在proxyObj 的get中重新绑定副作用函数
+  */
+  function cleanUp(effectFn) {
+    for(let i = 0; i < effectFn.deps.length; i++) {
+      const deps = effectFn.deps[i]
+      deps.delete(effectFn)
+    }
+    effectFn.deps.length = 0;
+  }
+</script>
+
+<script>
+// 简单响应式
+const initObj = {
+  name: 'lvcanfa',
+  age: 20
+}
+const proxyObj = new Proxy(initObj, {
+  get(target, key) {
+    track(target, key) // track 追踪函数，用于挂载副作用函数
+    return target[key]
+  },
+  set(target, key, newVal) {
+    console.log(`set:\n${key}:${target[key]}\nnew:${newVal}`);
+    target[key] = newVal;
+    trigger(target, key, newVal); // trigger 触发函数，用于将变动了的字段的副作用函数取出调用
+  },
+});
+
+/**
+ * @data {target} get 获取的对象--Proxy 代理的 proxyObj
+ * @data {key} get 读取的键值
+ */
+function track(target, key) {
+  if(!activeEffect) return target[key]; // 若无副作用函数，直接返回数据
+    let depsMap = bucket.get(target)      // 以对象为 key 在 weakMap 中建立一个 map 来存此对象中的 key 值，key 的 value 是一个 set ，存储它的副作用函数
+    if(!depsMap) {  // 若无则新建
+      bucket.set(target, (depsMap = new Map()))
+    }
+    let deps = depsMap.get(key)
+    if(!deps) { // 若无则新建
+      depsMap.set(key, (deps = new Set()))
+    }
+    deps.add(activeEffect);
+    activeEffect.deps.push(deps) //deps 是一个与当前副作用函数存在联系的依赖集合
+    // activeEffect.deps.push({key:key,effs:deps}) //deps 是一个与当前副作用函数存在联系的依赖集合
+    console.log(bucket);
+}
+
+/**
+ * @data {target} get 获取的对象--Proxy 代理的 proxyObj
+ * @data {key} set 修改的键值
+ * @data {key} newVal 修改后的值
+ */
+function trigger(target, key, newVal) {
+  const depsMap = bucket.get(target) // 获取这个对象的 map 仓库
+  if(!depsMap) return
+  let effects = depsMap.get(key)  // 在此对象的 map 仓库中获取对应 key 值的副作用函数，遍历执行
+  if(!effects) depsMap.set(key, (effects = new Set())) // 若是新添加的 key值，则未执行过 get 注册副作用函数，现注册一次
+  effects.add(activeEffect);
+
+  const effectsToRun = new Set(effects) // 复制一份防止 effects 循环中长度变化发生无限循环
+  effectsToRun.forEach(effectFn => effectFn(key, newVal)); // set修改时执行 effect 副作用函数
+}
+
+</script>
+
+<script>
+  const name = document.getElementById('name');
+  const age = document.getElementById('age');
+  name.innerHTML = proxyObj.name;
+  age.innerHTML = proxyObj.age;  // 触发 get
+
+  function changeName(){
+    proxyObj.name = 'canfa change';
+    proxyObj.work = '软件开发'
+  }
+  function agechange(){
+    const age =  proxyObj.age
+    proxyObj.age = age-1
+  }
+</script>

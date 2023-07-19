@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    #container {
+        overflow-y: scroll;
+        position: relative;
+        width: 300px;
+        height: 300px;
+    }
+
+    #content {
+        position: absolute;
+        width: 100%;
+    }
+</style>
+
+<body>
+    <div id="container">
+        <div id="content"></div>
+    </div>
+</body>
+<script>
+    const itemHeight = 50;
+    const containerHeight = 300;
+    const totalItems = 1000;
+    const visibleItemCount = Math.ceil(containerHeight / itemHeight);
+
+    const container = document.getElementById('container');
+    const content = document.getElementById('content');
+
+    container.style.height = `${containerHeight}px`;
+
+    let startIndex = 0;
+    let endIndex = visibleItemCount;
+
+    const itemCache = new Map();
+
+    let isScrolling = false;
+
+    container.addEventListener('scroll', handleScrollThrottled);
+
+    function handleScrollThrottled() {
+        if (!isScrolling) {
+            isScrolling = true;
+            requestAnimationFrame(() => {
+                handleScroll();
+                isScrolling = false;
+            });
+        }
+    }
+
+    renderVisibleItems();
+
+    function handleScroll() {
+        requestAnimationFrame(() => {
+            const scrollTop = container.scrollTop;
+
+            const newStartIndex = Math.floor(scrollTop / itemHeight);
+            const newEndIndex = Math.min(newStartIndex + visibleItemCount, totalItems);
+
+            if (newStartIndex !== startIndex || newEndIndex !== endIndex) {
+                startIndex = newStartIndex;
+                endIndex = newEndIndex;
+                renderVisibleItems();
+            }
+        });
+    }
+
+    function renderVisibleItems() {
+        const fragment = document.createDocumentFragment();
+
+        for (let i = startIndex; i < endIndex; i++) {
+            let item = itemCache.get(i);
+
+            if (!item) {
+                item = document.createElement('div');
+                item.className = 'item';
+                item.style.height = `${itemHeight}px`;
+                item.style.transform = `translateY(${i * itemHeight}px)`;
+                item.innerText = `Item ${i}`;
+
+                itemCache.set(i, item);
+            }
+
+            fragment.appendChild(item);
+        }
+
+        content.innerHTML = '';
+        content.appendChild(fragment);
+    }
+
+</script>
+
+</html>

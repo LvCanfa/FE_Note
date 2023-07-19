@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="input-container">
+    <div class="input-old-string">
+      <span>请输入旧字符串:</span>
+      <input class="inputString" type="text" value="eleocfvfbg">
+    </div>
+    <div class="input-new-string">
+      <span>请输入新字符串:</span>
+      <input class="inputString" type="text" value="ledfdkakglowbgked">
+    </div>
+    <button id="strDiff">字符串diff</button>
+  </div>
+  <div>
+    <span>旧字符串</span>
+    <h3 class="strOld"></h3>
+    <span>新字符串</span>
+    <h3 class="strNew"></h3>
+    <div>
+      <span>diff结果：</span>
+      <h1 id="diffStr"></h1>
+    </div>
+  </div>
+  <span>边界原始值全为0，为了方便寻找对应值，这里改成了递增数字来对应index</span>
+  <div class="container">
+  </div>
+  <div>
+    <span>最长相同子串：</span>
+    <h1 class="sameStrArr">
+    </h1>
+  </div>
+</body>
+</html>
+<script type="module">
+  import { LcsFn } from './Lcs.js'
+
+  const DELETE_ELEMENT = 'delete-element';
+  const ADD_ELEMENT = 'add-element';
+  const OLD_ELEMENT = 'old-element';
+
+  const strDiff = document.getElementById('strDiff');
+  const inputString = document.getElementsByClassName('inputString');
+  window.onload = () => {
+    inputString[0].focus();
+  }
+  strDiff.onclick = () => update(inputString[0].value, inputString[1].value);
+
+  function update(_strOld, _strNew) {
+    const LcsData = LcsFn(_strOld, _strNew);
+    const {strOld, strNew, lcsArr, sameStrArr, operateArr} = LcsData
+    console.log(strOld, strNew, lcsArr, sameStrArr, operateArr);
+
+    // lcs二维数组展示赋值
+    let divEle = document.getElementsByClassName('container');
+    while (divEle[0].firstChild) {
+      divEle[0].firstChild.remove();
+    }
+    for (let i = 0; i < lcsArr.length; i++) {
+      const divElement = document.createElement('div');
+      for (let j = 0; j < lcsArr[0].length; j++) {
+        const spanElement = document.createElement('span');
+        spanElement.innerHTML = i == 0 ? j : ( j == 0 ? i : lcsArr[i][j]);
+        spanElement.className = i == 0 ? 'head' : ( j == 0 ? 'head' : '')
+        divElement.appendChild(spanElement);
+      }
+      divEle[0].appendChild(divElement);
+    }
+
+    // lcs前后两字符串展示以及最长相同子串
+    const str1Ele = document.getElementsByClassName('strOld')[0];
+    const str2Ele = document.getElementsByClassName('strNew')[0];
+    const sameStrEle = document.getElementsByClassName('sameStrArr')[0];
+
+    str1Ele.innerHTML = strOld
+    str2Ele.innerHTML = strNew
+    sameStrEle.innerHTML = sameStrArr.toString();
+    renderDiffStr(operateArr);
+  }
+
+  function renderDiffStr(resultArr) {
+    const diffStr = document.getElementById("diffStr");
+
+    // 清除子节点，防止多次diff插入的子节点重复
+    while (diffStr.firstChild) {
+      diffStr.firstChild.remove();
+    }
+
+    // 寻找
+    for (let i = 0; i < resultArr.length; i++) {
+      if(i % 2 == 1) {
+        const spanElement = document.createElement('span');
+        spanElement.innerHTML = resultArr[i];
+        spanElement.className = getElementClass(resultArr[i - 1])
+        diffStr.appendChild(spanElement);
+      }
+
+    }
+  }
+
+  function getElementClass(type) {
+    switch (type) {
+      case "-" : return DELETE_ELEMENT;
+      case "+" : return ADD_ELEMENT;
+      default : return OLD_ELEMENT;
+    }
+  }
+</script>
+<style>
+  .container span {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    box-sizing: border-box;
+    border: 1px solid #33333315;
+    line-height: 30px;
+    text-align: center;
+    background-color: #a1f28672;
+  }
+  .head {
+    background-color: #f5c3c3;
+    color: #0000003d;
+  }
+  input {
+    border: none;
+    outline: none;
+  }
+  .delete-element {
+    color: red;
+    text-decoration-line: line-through;
+  }
+  .add-element {
+    color: rgb(9, 235, 9);
+  }
+  .old-element {
+    color: black;
+  }
+</style>
+<!-- asdqwcfvfbg -->
+<!-- kawloakglowke -->
