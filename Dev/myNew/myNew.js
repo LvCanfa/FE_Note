@@ -5,7 +5,7 @@
  * @param {*} 实例都会拥有单独的父类构造函数的属性，不再全部共享父类构造函数的属性，但是同时因为改变this指向，子类也无法访问父类的原型
 
  */
-function myNew(fn,...args) {
+function myNew(fn, ...args) {
 
   // 创建一个空对象，该对象的 __proto__ 属性指向构造函数的 prototype对象
 
@@ -20,7 +20,7 @@ function myNew(fn,...args) {
    * 判断构造函数的返回值是否为对象，如果是则直接返回该对象，否则返回新对象
    * 防止构造函数 Person 中返回对象把 new 创建的对象覆盖
    */
-  if (result && typeof(result) === 'object') {
+  if (result && typeof (result) === 'object') {
     return result;
   }
   return obj;
@@ -35,4 +35,4 @@ function Person(name, age) {
 }
 const p = myNew(Person, 'Tom', 16);
 
-console.log(p);
+console.log(p); // Person { name: 'Tom', age: 16 }

@@ -39,6 +39,6 @@ Sub.prototype.sayAge = function () {
   console.log(`Sub's prototype function :${this.age}`);
 }
 const SubT = new Sub('a', 12);
-console.log(SubT);
-SubT.sayAge();
-SubT.sayType();
+console.log(SubT);  // Sub { type: 'a', age: 12 }
+SubT.sayAge();      // Sub's prototype function :12
+SubT.sayType();     // SuperType's prototype function :a
