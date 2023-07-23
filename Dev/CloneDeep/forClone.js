@@ -11,6 +11,7 @@
  *
  *       5. 通过cp函数，我们可以获取到要复制的对象中包含的每一个obj，并且能够获取到该子值的链式调用路径
  *       6. 再根据此链式路径去修改复制后的对象的该子值为其对应的父值即可
+ * 
  * @JSON  JSON.parse(JSON.stringfy(obj))的缺陷：
  *        1. 会忽略 undefined 
  *        2. 会忽略 symbol 
@@ -48,7 +49,7 @@ function cp(objOld, objKey) {
         if (objArr.indexOf(objOld[item]) == -1) {
           // 此对象值未被遍历过，递归
           objKey[item] = {}
-          objNew[item] = cp(objOld[item], item, objKey[item]);
+          objNew[item] = cp(objOld[item], objKey[item]);
         } else {
           objKey[item] = 0;
           // 此对象值为已经遍历过的对象，先赋值为对象数组的index

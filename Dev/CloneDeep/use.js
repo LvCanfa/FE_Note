@@ -34,4 +34,4 @@ obj3.a.a_leval5.a_leval7 = obj2;
 const cloneObj = cloneFn(obj3);
 
 console.log(obj3);
-console.log(cloneObj.a.a_leval7);
+console.log(cloneObj.a.a_leval5);
