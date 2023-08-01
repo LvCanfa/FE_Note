@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<style>
+    #draggableDiv {
+        position: absolute;
+        width: 200px;
+        height: 30px;
+        background-color: #e9a6a6;
+        cursor: move;
+    }
+
+    #container {
+        border: 1px solid #333;
+        width: 80vw;
+        height: 80vh;
+    }
+</style>
+
+<body>
+    <div id="container">
+        <div id="draggableDiv" draggable="true">
+            这个 div 可以拖动
+        </div>
+    </div>
+</body>
+
+</html>
+
+
+<script>
+    /**
+     * 未使用拖拽 API，使用定位脱离文档流来实现任意位置摆放，监听偏移量来修改位置
+     */
+    const draggableDiv = document.getElementById("draggableDiv");
+    const container = document.getElementById("container");
+
+    let isDragging = false;
+    let offsetX, offsetY;
+    draggableDiv.addEventListener("mousedown", function (event) {
+        event.preventDefault();
+        isDragging = true;
+        offsetX = event.clientX - draggableDiv.offsetLeft;
+        offsetY = event.clientY - draggableDiv.offsetTop;
+    });
+
+    document.addEventListener("mousemove", function (event) {
+        event.preventDefault();
+        if (isDragging) {
+            // 边界检测
+            requestAnimationFrame(() => {
+                // 重新定义边距适应窗口大小变化情况
+                const { left: minLeft, right: maxLeft, top: minTop, bottom: maxTop } =
+                    container.getBoundingClientRect();
+                const { width: dragWidth, height: dragHeight } = draggableDiv.getBoundingClientRect()
+
+                const left = event.clientX - offsetX;
+                const top = event.clientY - offsetY;
+                const newLeft = Math.max(minLeft, Math.min(left, maxLeft - dragWidth));
+                const newTop = Math.max(minTop, Math.min(top, maxTop - dragHeight));
+
+                draggableDiv.style.left = newLeft + "px";
+                draggableDiv.style.top = newTop + "px";
+            })
+        }
+    });
+    document.addEventListener("mouseup", function (event) {
+        event.preventDefault();
+        isDragging = false;
+    });
+</script>
