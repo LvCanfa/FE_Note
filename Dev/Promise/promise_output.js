@@ -10,34 +10,38 @@
 Promise.resolve()
     .then((res) => {
         console.log(0);
-        return 4
-        // return {
-        //     then: function (resolve) {
-        //         resolve(4)
-        //     }
-        // }
-        // return Promise.resolve(4)
-        return Promise.resolve(4)
-            .then(res=>{console.log('???',res)})
-            .then(()=>{console.log('!!!');})
+        return Promise.resolve().then(() => {
+            // return 4
+            return {
+                then: function (resolve) {
+                    resolve(Promise.resolve(4))
+                }
+            }
+        })
     })
-    .then((res)=>{
-        console.log(res,'res');
+    .then((res) => {
+        console.log(res);
     })
-    // 01
+// 01
 Promise.resolve(-1)
-    .then((res)=>{
+    .then((res) => {
         console.log(1);
     })
-    .then((res)=>{
+    .then((res) => {
         console.log(2);
     })
-    .then((res)=>{
+    .then((res) => {
         console.log(3);
     })
-    .then(()=>{
+    .then(() => {
         console.log(5);
     })
-    .then(()=>{
+    .then(() => {
         console.log(6);
+    })
+    .then(() => {
+        console.log(7);
+    })
+    .then(() => {
+        console.log(8);
     })
