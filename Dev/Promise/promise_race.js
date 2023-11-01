@@ -10,7 +10,7 @@ const p1 = Promise.resolve(1);
 const p2 = new Promise((resolve) => {
   setTimeout(() => {
     resolve(2);
-  }, 1000);
+  }, 2000);
 });
 
 promiseRace([p2, p1]).then((results) => {

@@ -110,5 +110,5 @@ var inorderTraversal = function (root, res = []) {
   return res;
 }
 console.log(preorderTraversal(0));
-console.log(postorderTraversal(0));
-console.log(inorderTraversal(0));
+// console.log(postorderTraversal(0));
+// console.log(inorderTraversal(0));

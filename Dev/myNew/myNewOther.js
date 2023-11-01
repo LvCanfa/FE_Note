@@ -33,7 +33,7 @@ function Sub(type, age) {
 }
 
 inheritPropertype(Sub, SuperType);
-
+console.log(Sub.prototype);
 // 修改原型后定义一个Sub上的原型方法
 Sub.prototype.sayAge = function () {
   console.log(`Sub's prototype function :${this.age}`);
